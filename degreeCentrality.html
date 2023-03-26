@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Centrality Graph Visualization</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+	<style>
+		#map { height: 500px; }
+	</style>
+</head>
+<body>
+
+	<div id="map"></div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.1/chroma.min.js"></script>
+	<script>
+		// Define color scale for degree centrality
+		var colorScale = chroma.scale(['white', 'red', 'yellow', 'green']).domain([0, 16]);
+
+		var sizeScale = (degree) => {
+
+				if(degree < 4)
+					return 10;
+				if(degree < 9)
+					return 20;
+				if(degree < 13)
+					return 30;
+				return 40;
+		}
+
+		// Define size scale based on degree centrality
+		//var sizeScale = chroma.scale(['10','20', '30','40']).domain([0, 4]);
+
+		// Example JSON data for a centrality graph
+		// var graphData = require('city_graph.geojson');
+		// $.getJSON("city_graph.geojson.json", function(json) {
+		//     console.log(json); // this will show the info it in firebug console
+		// });
+		fetch('http://localhost:3000/data.json')
+		.then(response => response.json())
+		.then(graphData => {
+			// do something with the parsed data
+			var map = L.map('map').setView([51.505, -0.09], 13);
+
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+			maxZoom: 18,
+			id: 'mapbox/streets-v11',
+			tileSize: 512,
+			zoomOffset: -1
+		}).addTo(map);
+
+		// Add features to the map
+		graphData.features.forEach(function(feature) {
+		// Create marker for feature
+		var marker = L.circleMarker([feature.geometry.coordinates[0], feature.geometry.coordinates[1]], {
+		// Set color of the marker based on degree centrality
+		fillColor: colorScale(feature.properties.degree),
+		fillOpacity: 0.8,
+		stroke: false,
+		radius: sizeScale(feature.properties.degree)
+		});
+		//marker.bindPopup(feature.name);
+
+		marker.addTo(map);
+		console.log("hello");
+		});
+			
+		})
+		.catch(error => console.error('Failed to load file', error));
+		
+		
+
+		
+</script>
+
+</body>
+</html>
