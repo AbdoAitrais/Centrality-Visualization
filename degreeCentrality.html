@@ -24,12 +24,12 @@
 		var sizeScale = (degree) => {
 
 				if(degree < 4)
-					return 10;
+					return 5;
 				if(degree < 9)
-					return 20;
+					return 10;
 				if(degree < 13)
-					return 30;
-				return 40;
+					return 15;
+				return 20;
 		}
 
 		// Define size scale based on degree centrality
@@ -40,11 +40,11 @@
 		// $.getJSON("city_graph.geojson.json", function(json) {
 		//     console.log(json); // this will show the info it in firebug console
 		// });
-		fetch('http://localhost:3000/data.json')
+		fetch('/data.json')
 		.then(response => response.json())
 		.then(graphData => {
 			// do something with the parsed data
-			var map = L.map('map').setView([51.505, -0.09], 13);
+			var map = L.map('map').setView([40.7997378,-73.9681077], 10);
 
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -57,7 +57,7 @@
 		}).addTo(map);
 
 		// Add features to the map
-		graphData.features.forEach(function(feature) {
+		function showNode(feature) {
 		// Create marker for feature
 		var marker = L.circleMarker([feature.geometry.coordinates[0], feature.geometry.coordinates[1]], {
 		// Set color of the marker based on degree centrality
@@ -66,11 +66,19 @@
 		stroke: false,
 		radius: sizeScale(feature.properties.degree)
 		});
-		//marker.bindPopup(feature.name);
+		marker.bindPopup("" + feature.properties.degree);
 
 		marker.addTo(map);
 		console.log("hello");
-		});
+		}
+		// graphData.features.forEach(
+		// 	showNode(feature)
+		// );
+
+		for (let index = 0; index < graphData.features.length; index++) {
+				var element = graphData.features[index];
+				setTimeout(showNode(element), 2000);
+			}
 			
 		})
 		.catch(error => console.error('Failed to load file', error));

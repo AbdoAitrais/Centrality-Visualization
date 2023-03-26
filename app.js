@@ -8,6 +8,10 @@ app.get('/data.json', (req, res) => {
   res.sendFile(__dirname + '/city_graph.geojson');
 });
 
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/degreeCentrality.html');
+});
+
 app.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
