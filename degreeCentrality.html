@@ -8,7 +8,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 
 	<style>
-		#map { height: 500px; }
+		#map { height: 100vh; }
 	</style>
 </head>
 <body>
@@ -24,28 +24,15 @@
 		var sizeScale = (degree) => {
 
 				if(degree < 4)
-					return 5;
-				if(degree < 9)
 					return 10;
+				if(degree < 9)
+					return 20;
 				if(degree < 13)
-					return 15;
-				return 20;
+					return 30;
+				return 40;
 		}
 
-		// Define size scale based on degree centrality
-		//var sizeScale = chroma.scale(['10','20', '30','40']).domain([0, 4]);
-
-		// Example JSON data for a centrality graph
-		// var graphData = require('city_graph.geojson');
-		// $.getJSON("city_graph.geojson.json", function(json) {
-		//     console.log(json); // this will show the info it in firebug console
-		// });
-		fetch('/data.json')
-		.then(response => response.json())
-		.then(graphData => {
-			// do something with the parsed data
-			var map = L.map('map').setView([40.7997378,-73.9681077], 10);
-
+		var map = L.map('map').setView([40.7546344,-73.9756983], 17);
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
 				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -56,35 +43,51 @@
 			zoomOffset: -1
 		}).addTo(map);
 
-		// Add features to the map
-		function showNode(feature) {
-		// Create marker for feature
-		var marker = L.circleMarker([feature.geometry.coordinates[0], feature.geometry.coordinates[1]], {
-		// Set color of the marker based on degree centrality
-		fillColor: colorScale(feature.properties.degree),
-		fillOpacity: 0.8,
-		stroke: false,
-		radius: sizeScale(feature.properties.degree)
-		});
-		marker.bindPopup("" + feature.properties.degree);
+		// var map = L.map('map').setView([40.7546344,-73.9756983], 17);
+		// map.createPane('labels');
+		// map.getPane('labels').style.zIndex = 650;
+		// map.getPane('labels').style.pointerEvents = 'none';
+		// var positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+        // attribution: '©OpenStreetMap, ©CartoDB'
+		// }).addTo(map);
 
-		marker.addTo(map);
-		console.log("hello");
-		}
-		// graphData.features.forEach(
-		// 	showNode(feature)
-		// );
+		// var positronLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
+		// 		attribution: '©OpenStreetMap, ©CartoDB',
+		// 		pane: 'labels'
+		// }).addTo(map);
 
-		for (let index = 0; index < graphData.features.length; index++) {
-				var element = graphData.features[index];
-				setTimeout(showNode(element), 2000);
-			}
-			
+
+		fetch('http://localhost:3000/data.json')
+    	.then(response => response.json())
+		.then(graphData => {
+			VisualizeGraph(graphData.features,0 )
 		})
 		.catch(error => console.error('Failed to load file', error));
 		
-		
 
+		
+		
+		function VisualizeGraph(features , i){
+			
+			let feature = features[i];
+			console.log(""+feature.properties.degree)
+			var marker = L.circleMarker([feature.geometry.coordinates[0], feature.geometry.coordinates[1]], {
+			// Set color of the marker based on degree centrality
+			fillColor: colorScale(feature.properties.degree),
+			fillOpacity: 0.8,
+			stroke: false,
+			radius: sizeScale(feature.properties.degree)
+			});
+			marker.bindPopup(feature.properties.degree + "");
+			marker.addTo(map);
+			i++;
+			if (i < features.length) {
+				setTimeout(() => VisualizeGraph(features,i), 10);
+			}
+
+		}
+		
+		
 		
 </script>
 
