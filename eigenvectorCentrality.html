@@ -20,23 +20,22 @@
 	<script>
 
 
-
-		var colorScale = (degree) =>{
-			if(degree < 3)
+		var colorScale = (eigenvector) =>{
+			if(eigenvector < 0.003)
 				return '#4cc9f0';
-			if(degree < 5)
+			if(eigenvector < 0.005)
 				return '#4361ee';
-			if(degree < 7)
+			if(eigenvector < 0.007)
 				return '#7209b7';
 			return '#f72585';
 		}
 
-		var sizeScale = (degree) => {
-			if(degree < 3)
+		var sizeScale = (eigenvector) => {
+			if(eigenvector < 0.003)
 				return 15;
-			if(degree < 5)
+			if(eigenvector < 0.005)
 				return 25;
-			if(degree < 7)
+			if(eigenvector < 0.007)
 				return 35;
 			return 50;
 		}
@@ -52,7 +51,6 @@
 			zoomOffset: -1
 		}).addTo(map);
 
-
 		fetch('/data.json')
     	.then(response => response.json())
 		.then(graphData => {
@@ -66,15 +64,15 @@
 		function VisualizeGraph(features , i){
 			
 			let feature = features[i];
-			console.log(""+feature.properties.degree)
+			console.log(""+feature.properties.eigenvector)
 			var marker = L.circleMarker([feature.geometry.coordinates[0], feature.geometry.coordinates[1]], {
-			// Set color of the marker based on degree centrality
-			fillColor: colorScale(feature.properties.degree),
+			// Set color of the marker based on eigenvector centrality
+			fillColor: colorScale(feature.properties.eigenvector),
 			fillOpacity: 0.8,
 			stroke: false,
-			radius: sizeScale(feature.properties.degree)
+			radius: sizeScale(feature.properties.eigenvector)
 			});
-			marker.bindPopup(feature.properties.degree + "");
+			marker.bindPopup(feature.properties.eigenvector + "");
 			marker.addTo(map);
 			i++;
 			if (i < features.length) {

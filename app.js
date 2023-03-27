@@ -12,6 +12,10 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/degreeCentrality.html');
 });
 
+app.get('/vector', (req, res) => {
+  res.sendFile(__dirname + '/eigenvectorCentrality.html');
+});
+
 app.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
